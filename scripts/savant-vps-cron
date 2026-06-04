@@ -1,0 +1,13 @@
+# SAVANT VPS Vision cron — keeps the shared snapshots fresh so the backend reads
+# them token-free (the script runs INSIDE hermes-v2; the Hermes LLM agent is never
+# invoked). Files written to /host/home/savant/logs/vps_map/ (hermes /:/host mount),
+# readable by savant-backend at /app/logs/vps_map/ (../logs:/app/logs already mounted).
+# Install:  sudo cp scripts/savant-vps-cron /etc/cron.d/savant-vps-cron
+# Then start the metrics loop once now:  scripts/metrics_refresher.sh &
+#
+# Quick Vision every 3 min
+*/3 * * * * root docker exec hermes-v2 sh -c 'mkdir -p /host/home/savant/logs/vps_map && python3 /host/home/savant/scripts/vps_quick_vision.py > /host/home/savant/logs/vps_map/QUICK_VISION.md 2>/dev/null'
+# 20s metrics loop
+@reboot root /home/savant/app/scripts/metrics_refresher.sh &
+# Full Vision hourly
+0 * * * * root docker exec hermes-v2 python3 /host/home/savant/scripts/vps_full_vision.py >> /var/log/vps_full_vision.log 2>&1

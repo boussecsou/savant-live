@@ -1,0 +1,6 @@
+fastapi           # async web framework — handles HTTP routes and WebSocket endpoints
+uvicorn[standard] # ASGI server that runs FastAPI; [standard] adds websockets + uvloop for performance
+websockets        # low-level WebSocket support used by uvicorn and Gemini Live streaming
+google-genai      # official Google SDK for Gemini Live (Speech-to-Speech)
+redis             # async Redis client for ephemeral session state
+python-dotenv     # loads .env into os.environ at startup (dev convenience; env_file in Docker handles prod)

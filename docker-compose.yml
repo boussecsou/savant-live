@@ -1,0 +1,56 @@
+services:
+
+  savant-backend:
+    build:
+      context: .             # build context is this repo root
+      dockerfile: Dockerfile # Dockerfile to be created at repo root
+
+    container_name: savant-backend # fixed name so Caddy can reference it by hostname
+
+    restart: always # auto-restart on crash or VPS reboot
+
+    ports:
+      - "8000:8000" # expose FastAPI on host port 8000; Caddy reverse-proxies to this
+
+    env_file:
+      - .env # injects GEMINI_API_KEY, REDIS_HOST, HERMES_URL, etc.
+
+    volumes:
+      - ../memory:/app/memory # persistent SQLite savant.db — lives outside the repo so it survives image rebuilds
+      - ../logs:/app/logs     # runtime logs — outside the repo so they survive rebuilds and can be inspected on the host
+      - ./pwa:/app/pwa:ro     # PWA static files — read-only; same host path mounted into caddy-proxy for direct serving
+      - ./hermes/vps_map:/app/vps_map:ro # cron-written Quick Vision + metrics snapshots — read token-free (no Hermes/LLM call)
+      - ../skills:/app/skills # voice-loadable skill docs (markdown) — Gemini reads on demand + can author new ones (read-write)
+
+    networks:
+      - n8n_network # join the existing VPS infra network so savant-backend can reach redis-container by hostname
+
+
+  hermes-v2:
+    image: nousresearch/hermes-agent
+    container_name: hermes-v2
+    restart: unless-stopped
+    privileged: true            # full Linux capabilities — required for VPS root management
+    pid: host                   # share host PID namespace — enables nsenter for host commands
+    entrypoint: ["/hermes-entrypoint.sh"]
+    command: gateway run --accept-hooks
+    environment:
+      - HERMES_ALLOW_ROOT_GATEWAY=1
+    env_file:
+      - ./hermes-agent.env
+    volumes:
+      - ./hermes:/opt/data
+      - ./hermes-entrypoint.sh:/hermes-entrypoint.sh:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /:/host                 # full VPS filesystem readable/writable at /host/
+    ports:
+      - "8643:8642"
+    networks:
+      - n8n_network
+
+
+networks:
+  n8n_network:
+    external: true                       # network is owned by the VPS infra docker-compose — do not recreate it here
+    name: n8n-automation_n8n_network     # exact name as declared in the VPS infra
+

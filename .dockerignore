@@ -1,0 +1,7 @@
+hermes/
+hermes-agent.env
+*.db
+*.log
+__pycache__/
+*.pyc
+.env
