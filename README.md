@@ -1,5 +1,7 @@
 <div align="center">
 
+![SAVANT Banner](docs/assets/banner.png)
+
 # SAVANT
 
 ### Voice AI Agent for VPS Management
@@ -16,18 +18,15 @@
 
 *Manage your Linux VPS through natural voice conversation. No SSH. No terminal. Just talk.*
 
-<!-- Demo GIF — replace with your actual recording -->
-<!-- ![SAVANT Demo](docs/assets/demo.gif) -->
-
 </div>
 
 ---
 
 ## What is SAVANT?
 
-SAVANT is a **real-time voice DevOps agent** that sits between you and your Linux server. You speak; SAVANT understands your intent, executes the appropriate commands, verifies results, and narrates what happened — all through a browser-based PWA powered by Google Gemini Live.
+SAVANT is a **real-time voice DevOps agent** that sits between you and your Linux server. You speak; SAVANT understands your intent, executes the appropriate commands, verifies results, and narrates what happened—all through natural conversation.
 
-**The problem it solves:** DevOps operations require constant context-switching between terminals, dashboards, and documentation. SAVANT collapses that into a single voice conversation. You stay focused on outcomes, not commands.
+**The problem it solves:** DevOps operations require constant context-switching between terminals, dashboards, and documentation. SAVANT collapses that into a single voice conversation. You stay focused on what matters.
 
 **What makes it different:**
 - **Gemini 3.1 Flash Live** — true bidirectional audio streaming, not speech-to-text + chat + TTS
